@@ -3,6 +3,7 @@ session_start();
 ?><html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>I have &#x1F36A;s</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" type="text/javascript"></script>
@@ -40,7 +41,7 @@ session_start();
             }
 
             var isCheckedAllCookietypes = $('#example_opt5').is(':checked')?true:false;
-            console.log(isCheckedAllCookietypes);
+
             var selectedGDPRmode = $('#example_opt4a').prop('checked')?'advanced':'compact';
             $('body').ihavecookies({
                 code_needed_only_for_example: true,
