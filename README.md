@@ -4,7 +4,9 @@ A lightweight jQuery plugin that displays a cookie &#x1F36A; consent message as 
 
 The visitor __must__ click the accept button within the popup for the cookie to be set thus granting their consent (GDPR).
 
-If reopening the popup the user may revise their consents, this makes it perfect for the "*implied consent model*". See example.php for good description of this method.
+By reopening the popup the user may revise their consents, this makes it perfect for the "*implied consent model*". See example.php for good description of this method.
+
+As described by the [Five Models for Cookie Law Consent](https://www.cookielaw.org/media/105101/five-models-for-cookie-law-consent.pdf) this plugin will cover model 1 and model 2.
 
 ## Usage
 
@@ -25,15 +27,21 @@ This will append the cookie popup to the `<body>` tag with the default settings 
 
 ### Settings
 
-There are a number of options available to help with customisation:
+There are a number of options available to help with customisation, defaults are used in description:
 
 ```
 $('body').ihavecookies({
-    // A custom title for the popup
-    title: "Cookies & Privacy",
-
     // boolean, display the popup regardless of existing cookies or not
     forceDisplayPanel: false, 
+
+    // advanced or compact, reflects model 2 and model 1 in example page.
+    GDPRmode: 'advanced',
+
+    // Default preselects all cookies in advanced mode
+    preselectAllCookietypes: true,
+
+    // A custom title for the popup
+    title: '&#x1F36A; Implied Consent: Cookies info',
 
     // Add your own cookie message here, if you prefer not to use the
     // default one. HTML can be included within this message.
@@ -43,18 +51,29 @@ $('body').ihavecookies({
               of ads and web searches, and give us insights into user
               behavior so we can improve our communications and products.",
 
+    // Compact mode has slightly different behaviour thus requiring alterations
+    // within the message displayed. A custom title and message for the popup. 
+    // HTML can be included within this message.
+    titleCompact: "This site uses cookies",
+    messageCompact: 'By clicking "Accept Cookies" or by continuing to use our
+              website, you give your consent and you agree to the use of
+              these Cookies.',
+
     // Link to your privacy policy for more information
     link: "/privacy-policy",
 
     // Time before the popup is displayed after page load (in milliseconds)
-    delay: 2000,
+    delay: 600,
 
     // Days for the cookie to expire
     expires: 30,
 
-    // Optional callback function when 'Accept' button is clicked
+    // Optional callbacks.
+    onDisplay: function(){
+        // Popup is displayed ...
+    },
     onAccept: function() {
-        // Do whatever you need to here...
+        // 'Accept' button was clicked...
     },
 
     // Unchecks all checkboxes on page load that have class .ihavecookies
@@ -63,13 +82,14 @@ $('body').ihavecookies({
 
     // Set labels for links and buttons
     moreInfoLabel: 'More information',
-    acceptBtnLabel: 'Accept All Cookies',
+    acceptBtnLabel: 'Accept Cookies',
     advancedBtnLabel: 'Customise Cookies',
     cookieTypesTitle: 'Select cookies to accept',
 
     // Labels and description for the "Necessary" cookie type
     fixedCookieTypeLabel:'Necessary',
-    fixedCookieTypeDesc: 'These are cookies that are essential for the website to work correctly.',
+    fixedCookieTypeDesc: 'These are essential for the website to work 
+                          correctly.',
 
     // Array of cookie types for which to show checkboxes.
     // - type: Type of cookie. This is also the label that is displayed.
@@ -78,25 +98,27 @@ $('body').ihavecookies({
     // - description: Description for this cookie type. Displayed in
     //                title attribute.
     cookieTypes: [
-        {
-            type: 'Site Preferences',
-            value: 'preferences',
-            description: 'These are cookies that are related to your site preferences, e.g. remembering your username, site colours, etc.'
-        },
-        {
-            type: 'Analytics',
-            value: 'analytics',
-            description: 'Cookies related to site visits, browser types, etc.'
-        },
-        {
-            type: 'Marketing',
-            value: 'marketing',
-            description: 'Cookies related to marketing, e.g. newsletters, social media, etc'
-        }
+            {
+                type: 'Site Preferences',
+                value: 'preferences',
+                description: 'These are cookies that are related to your site 
+                preferences, e.g. remembering your username, site colours, etc.'
+            },
+            {
+                type: 'Analytics',
+                value: 'analytics',
+                description: 'Cookies related to site visits, browser types, 
+                              etc.'
+            },
+            {
+                type: 'Marketing',
+                value: 'marketing',
+                description: 'Cookies related to marketing, e.g. newsletters, 
+                              social media, etc'
+            }
     ],
 });
 ```
-
 ### Methods
 
 `$.fn.ihavecookies.cookie()` returns the value of the `cookieControlPrefs` cookie.
@@ -106,11 +128,11 @@ $('body').ihavecookies({
 
 ### Styling
 
-The plugin doesn't include any CSS so it can be styled to fit in with your websites look and feel. The cookie message has an ID of `#gdpr-cookie-message`.
+ihavecookies.css contains the default style used in the example. The cookie message has an ID of `#gdpr-cookie-message`.
 
 ### Cookie
 
-When the visitor accepts the message, the cookie `cookieControl` with value `true` is set along with cookie `cookieControlPrefs` which contains an array of accepted cookie types e.g. `["preferences","analytics"]`. This will enable you to perform additional checks where necessary within your application (with regard to GDPR regulations).
+When the visitor accepts the message, the cookie `cookieControl` with value `true` is set along with cookie `cookieControlPrefs` which contains an array of accepted cookie types e.g. `["preferences","analytics","marketing"]`. This will enable you to perform additional checks where necessary within your application (with regard to GDPR regulations).
 
 ## Example
 

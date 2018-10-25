@@ -4,14 +4,27 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>I have &#x1F36A;s</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script type="text/javascript" src="jquery.ihavecookies.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="jquery.ihavecookies.min.js?<?=time()?>"></script>
     <script type="text/javascript">
     $(document).ready(function() {
-        // Be sure that the main JS has the correct language to save code
+
         $('body').ihavecookies({
-            forceDisplayPanel: true
+            code_needed_only_for_example: true,
+            onAccept: example_Callback,
+            onDisplayCookieSelector: example_CookieSelectorCallback,
+            forceDisplayPanel: true,
+            GDPRmode: 'advanced',
+            preselectAllCookietypes: false,
+            uncheckBoxes: true
+            
         });
+        if ($.fn.ihavecookies.preference('preferences') === true) {
+            console.log('This should run because preferences is accepted.');
+        }
         if ($.fn.ihavecookies.preference('marketing') === true) {
             console.log('This should run because marketing is accepted.');
         }
@@ -21,28 +34,133 @@ session_start();
 
         // Links with "gdpr-cookie-preferences" class will reopen the preferences
         $('.gdpr-cookie-preferences').on('click',function(){
-            if( $('#gdpr-cookie-message').length == 0 ){
-                $('body').ihavecookies({
-                    forceDisplayPanel: true,
-                    delay: 0
-                });
+
+            if( $('#gdpr-cookie-message').length != 0 ){
+                $('#gdpr-cookie-message').remove();
             }
+
+            var isCheckedAllCookietypes = $('#example_opt5').is(':checked')?true:false;
+            console.log(isCheckedAllCookietypes);
+            var selectedGDPRmode = $('#example_opt4a').prop('checked')?'advanced':'compact';
+            $('body').ihavecookies({
+                code_needed_only_for_example: true,
+                onAccept: example_Callback,
+                onDisplayCookieSelector: example_CookieSelectorCallback,
+                forceDisplayPanel: true,
+                delay: 0,
+                GDPRmode: selectedGDPRmode,
+                preselectAllCookietypes: isCheckedAllCookietypes
+            });
+
+        });
+
+        $('.helper-destroy-cookies').on('click', function(){
+            $.removeCookie('cookieControl');
+            $.removeCookie('cookieControl', { path: '/' });
+            $.removeCookie('cookieControlPrefs');
+            $.removeCookie('cookieControlPrefs', { path: '/' });
+            new Noty({
+                text: 'Cookies deleted',
+                timeout: 1500,
+                progressBar: true,
+                type: 'info'
+            }).show();
         });
 
     });
+
+    function example_Callback(){
+        if ($.fn.ihavecookies.preference('analytics') === false) {
+            // analytics cookie removal task goes here
+            console.log('analytics off');
+        } else {
+            console.log('analytics on');
+        }
+        if ($.fn.ihavecookies.preference('marketing') === false) {
+            // marketing cookie removal task goes here
+            console.log('marketing off');
+        } else {
+            console.log('marketing on');
+        }
+        if ($.fn.ihavecookies.preference('preferences') === false) {
+            // preferences cookie removal task goes here
+            console.log('preferences off');
+        } else {
+            console.log('preferences on');
+        }
+    }
+
+    function example_CookieSelectorCallback(){
+
+        var isCheckedAllCookietypes = $('#example_opt5').is(':checked')?true:false;
+
+        var myCookiePrefs = $.fn.ihavecookies.cookie('cookieControlPrefs');
+        if(myCookiePrefs){
+            if( isCheckedAllCookietypes ){
+                new Noty({ text: 'Remember cookie is already set so we are reading existing values now!', timeout: 3500, progressBar: true, type: 'info' }).show();
+            }
+        }
+
+        // Needed patch as variable is not updated, how this scope is solved I do not know
+        return isCheckedAllCookietypes;
+    }
+
     </script>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab|Quicksand:400,500" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="ihavecookies.css">
+    <style>
+        .github-badge{
+            width: 140px;
+            height: 140px;
+            position: fixed;
+            top: 0;
+            right: 0;
+        }
+        .github-badge:before{
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 0 solid transparent;
+            border-right: 140px solid #232323;
+            border-bottom: 140px solid transparent;
+            display: block;
+            text-align: center;
+        }
+        .github-badge img{
+            max-width: 60px;
+            width: 100%;
+            display: block;
+            margin: 0 auto;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .php-debug {
+            border-top: 2px dotted grey;
+            border-bottom: 2px dotted grey;
+            padding: 1em 0 0 0;
+            margin: 1em 0 0.5em 0;
+        }
+        .php-debug h4 {
+            margin: -0.5em 0 0 0;
+            padding: 0;
+        }
+
+    </style>
 </head>
 <body>
+
     <a href="https://github.com/steinhaug/ihavecookies" title="Fork me on Github" class="github-badge">
 		<img src="img/github-logo.svg" alt="Github">
 	</a>
 
+
     <div class="container">
-        <h1>ihavecookies jQuery Plugin in action</h1>
+        <h1>ihavecookies+ jQuery Plugin in action</h1>
         <p>When you load this page you will see an example of the cookie message popup in the bottom right corner.</p>
         <p>If you don't see it, clear your cookies or delete the cookie called <code>cookieControl</code>.</p>
+
+        <p id="test" class="animate-me">I will be shown or hidden.</p>
 
         <h3>Checkboxes</h3>
 
@@ -51,16 +169,83 @@ session_start();
         <ul>
             <li><input type="checkbox" id="opt1" value="Y" checked> <label for="opt1">Checked by default &dash; remains checked</label>
             <li><input type="checkbox" id="opt2" value="Y"> <label for="opt2">Unchecked by default &dash; remains unchecked</label>
-            <li><input type="checkbox" id="opt3" value="Y" class="ihavecookies" checked> <label for="opt3">Checked by default &dash; <em>ihavecookies</em> automatically unchecks this on page load because is has the class <code>ihavecookies</code> applied to it.</label>
+            <li><input type="checkbox" id="opt3" value="Y" class="ihavecookies" checked> <label for="opt3">Checked by default &dash; <em>ihavecookies</em> automatically unchecks this on page load because is has the class <code>ihavecookies</code>, enabled with the <code>uncheckBoxes</code> parameter set to true.</label>
         </ul>
 
-        <button class="gdpr-cookie-preferences">Reopen settings</button>
 
-        <h1>Model 2: Implied Consent</h1>
+        <h3>Settings for opening popup</h3>
+
+        <p>Main usage options, read the <a href="README.md">README.md</a> for a complete list of options.</p>
+
+        <ul>
+            <li>
+                <input type="radio" name="GDPRmode" value="advanced" id="example_opt4a"><label for="example_opt4a">Advanced mode</label>
+                <input type="radio" name="GDPRmode" value="compact" id="example_opt4b"><label for="example_opt4b">Compact mode</label>
+                <br>
+                &nbsp; &nbsp; &nbsp; By default ihavecookies runs with advanced mode and options for selecting what cookie types to give consent.
+            <li><input type="checkbox" name="example_preselectAllCookietypes" id="example_opt5" value="true"> <label for="example_opt5">Preselect all for advanced mode upon opening cookie settings.</label>
+        </ul>
+
+        <button class="gdpr-cookie-preferences">Reopen cookie popup</button>
+        &nbsp; 
+        <button class="helper-destroy-cookies">Delete all cookies</button>
+
+<?php
+
+    echo '<div class="php-debug"><h4>PHP debug on page load</h4>';
+
+        echo '<div>';
+        if(GDPR('analytics')){
+            echo '<p>function GDPR(\'analytics\') returns true, analytics enabled</p>';
+        }
+        echo '</div>';
+
+        /**
+         *  The three different cookie groups that can be used are:
+         *  preferences, analytics, marketing
+         */
+        function GDPR($type){
+
+            // User has not yet given concent 
+            if( !isset($_COOKIE['cookieControlPrefs']) )
+                return true;
+
+            // User has now given consent and we obey that
+            $prefs = $_COOKIE['cookieControlPrefs'];
+            if( strpos($prefs, $type) === false )
+                return false;
+
+            return true;
+        }
+
+        var_dump( $_COOKIE );
+
+    echo '</div>';
+?>
+
+
+
+        <h1>Cookie law consent concepts</h1>
+        <p>
+            The full article on <a href="https://www.cookielaw.org/media/105101/five-models-for-cookie-law-consent.pdf">five models for cookie law consent</a> is available in PDF, exerpts below. 
+        </p>
+        <h2>Model 1: Information Only <span style="color:green">(compact)</span></h2>
+        <p>In summary: By visiting the site, you accept our use of cookies.</p>
+        <p>Basically this model tells the user that cookies are in use, and their choices are to accept 
+        the fact or navigate away. This is technically the simplest approach, and the most widely adopted. 
+        It requires the least amount of effort and change to a site. It can be done well, but it is also very 
+        easy to get wrong.</p>
+        <p>The amount of information provided by sites using this approach can vary a great deal.
+        Some have nothing more than a short statement in some kind of banner, with variations on
+        the above sentence, and a mechanism to remove it from view.</p>
+        <p>Others will go further by perhaps linking to an internal cookie information page that says a bit more about the cookies in use.</p>
+
+
+        <h2>Model 2: Implied Consent <span style="color:green">(advanced)</span></h2>
         <p>In summary: We are using and have set cookies, but you can switch them off if you want.</p>
         <p>The key differentiator to the Information Only model is that the site provides the ability to
         directly opt-out or refuse cookies, even though they are set by default on first arrival.<p>
-        <h2>Good Practice Tips:</h2>
+        <h3>Good Practice Tips:</h3>
         <p>When offering opt-out controls there is balance to be struck between usability and the effort
         required to opt-out.
         Creating options for different levels of opt-out is good. Best practice suggests grouping or
@@ -92,7 +277,7 @@ session_start();
         to tell users you are complying whilst not requiring an action to get rid of the message. As
         long as there is another always available link to the opt-out controls, this can be an
         additional assurance that you have given clear notice to visitors.
-        <h2>Mistakes to Avoid:</h2>
+        <h3>Mistakes to Avoid:</h3>
         <p>Probably the biggest mistake we see is confusion between the Information Only and
         Implied Consent models. As noted above a lot of sites try to use the language of implied
         consent in an information only notice, but implied consent notices can also be easily
@@ -121,7 +306,7 @@ session_start();
         reading existing cookies, however if you use the right mechanisms to stop setting of new
         cookies, this will also prevent reading if existing cookies, which is consistent with the
         implied consent model.</p>
-        <h2>Risk Factors</h2>
+        <h3>Risk Factors</h3>
         <p>Implied consent is potentially the least user-interruptive model for compliance, if done in the
         right way. It can give real choice without getting in the way of the user journey for those
         that are genuinely not interested in exercising their choice.</p>
@@ -135,37 +320,6 @@ session_start();
 
     </div>
 
-
-
-<?php
-
-    echo '<div>';
-    if(GDPR('analytics')){
-        echo '<p>Analytics enabled</p>';
-    }
-    echo '</div>';
-
-/**
- *  The three different cookie groups that can be used are:
- *  preferences, analytics, marketing
- */
-function GDPR($type){
-
-    // User has not yet given concent 
-    if( !isset($_COOKIE['cookieControlPrefs']) )
-        return true;
-
-    // User has now given consent and we obey that
-    $prefs = $_COOKIE['cookieControlPrefs'];
-    if( strpos($prefs, $type) === false )
-        return false;
-
-    return true;
-}
-
-var_dump( $_COOKIE );
-
-?>
 
 </body>
 </html>

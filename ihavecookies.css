@@ -103,6 +103,7 @@
         color: var(--black);
         transition: all 0.3s ease-in;
     }
+    button#gdpr-cookie-policy, 
     button#gdpr-cookie-advanced {
         color: #fff;
         border-color: var(--blue);
@@ -120,11 +121,13 @@
         box-sizing: border-box;
         text-shadow: 0 1px 0 rgba(0,0,0,0.01);
     }
+    button#gdpr-cookie-policy:hover,
     button#gdpr-cookie-advanced:hover {
         background: var(--orange);
         color: #000;
         border-color: var(--orange);
     }
+    button#gdpr-cookie-policy,
     button#gdpr-cookie-advanced {
         padding: 2px 7px 2px 7px;
         font-size: 0.75em;
@@ -132,32 +135,14 @@
         border: 1px solid rgba(255, 255, 255, .1);
     }
 
-
-    .github-badge{
-        width: 140px;
-        height: 140px;
-        position: fixed;
-        top: 0;
-        right: 0;
+    /* Quick css for footer bar with cookie text */
+    #gdpr-cookie-message.gdpr-compact {
+        max-width: 100%;
+        padding: 15px 20px;    
     }
-
-    .github-badge:before{
-        content: "";
-        width: 0;
-        height: 0;
-        border-top: 0 solid transparent;
-        border-right: 140px solid #232323;
-        border-bottom: 140px solid transparent;
-        display: block;
-        text-align: center;
+    #gdpr-cookie-message.gdpr-compact p {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
     }
-
-    .github-badge img{
-        max-width: 60px;
-        width: 100%;
-        display: block;
-        margin: 0 auto;
-        position: absolute;
-        top: 10px;
-        right: 10px;
+    #gdpr-cookie-message.gdpr-compact p:last-child {
     }
