@@ -9,27 +9,28 @@ session_start();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script type="text/javascript" src="jquery.ihavecookies.min.js?<?=time()?>"></script>
+    <script type="text/javascript" src="jquery.ihavecookies.js?<?=time()?>"></script>
     <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function(){
 
         $('body').ihavecookies({
             code_needed_only_for_example: true,
-            onAccept: example_Callback,
+            onDisplay: update_cookie_debugger,
             onDisplayCookieSelector: example_CookieSelectorCallback,
+            onAccept: example_Callback,
             forceDisplayPanel: true,
             GDPRmode: 'advanced',
             preselectAllCookietypes: false,
             uncheckBoxes: true
             
         });
-        if ($.fn.ihavecookies.preference('preferences') === true) {
+        if ($.fn.ihavecookies.preference('preferences') === true){
             console.log('This should run because preferences is accepted.');
         }
-        if ($.fn.ihavecookies.preference('marketing') === true) {
+        if ($.fn.ihavecookies.preference('marketing') === true){
             console.log('This should run because marketing is accepted.');
         }
-        if ($.fn.ihavecookies.preference('analytics') === true) {
+        if ($.fn.ihavecookies.preference('analytics') === true){
             console.log('This should run because analytics is accepted.');
         }
 
@@ -45,8 +46,9 @@ session_start();
             var selectedGDPRmode = $('#example_opt4a').prop('checked')?'advanced':'compact';
             $('body').ihavecookies({
                 code_needed_only_for_example: true,
-                onAccept: example_Callback,
+                onDisplay: update_cookie_debugger,
                 onDisplayCookieSelector: example_CookieSelectorCallback,
+                onAccept: example_Callback,
                 forceDisplayPanel: true,
                 delay: 0,
                 GDPRmode: selectedGDPRmode,
@@ -68,22 +70,44 @@ session_start();
             }).show();
         });
 
+        update_cookie_debugger();
+
     });
 
+    function update_cookie_debugger(){
+        $('#ihavecookies-debugger .wrapper').children().each(function(){
+            $(this).find('img').attr('title', $(this).attr("class") + ' cookie is not set');
+        });
+
+        if( $.cookie('cookieControl') === "true" ){
+            $('#ihavecookies-debugger .control').addClass('on').find('img').attr('title','control cookie is set');
+        }
+
+        var cprefs = $.cookie('cookieControlPrefs');
+        cprefs = JSON.parse(cprefs);
+
+        $.each(['preferences','analytics','marketing'], function( index, value ){
+            if( !(cprefs.indexOf(value) === -1) ){
+                $('#ihavecookies-debugger .' + value).addClass('on').find('img').attr('title',value + ' cookie is set');
+            }
+        });
+    }
+
     function example_Callback(){
-        if ($.fn.ihavecookies.preference('analytics') === false) {
+        update_cookie_debugger();
+        if ($.fn.ihavecookies.preference('analytics') === false){
             // analytics cookie removal task goes here
             console.log('analytics off');
         } else {
             console.log('analytics on');
         }
-        if ($.fn.ihavecookies.preference('marketing') === false) {
+        if ($.fn.ihavecookies.preference('marketing') === false){
             // marketing cookie removal task goes here
             console.log('marketing off');
         } else {
             console.log('marketing on');
         }
-        if ($.fn.ihavecookies.preference('preferences') === false) {
+        if ($.fn.ihavecookies.preference('preferences') === false){
             // preferences cookie removal task goes here
             console.log('preferences off');
         } else {
@@ -146,6 +170,38 @@ session_start();
             margin: -0.5em 0 0 0;
             padding: 0;
         }
+        #ihavecookies-debugger {
+            /* border: 0; */
+            font-size: 10pt;
+            margin: 0 auto;
+            padding: 10px 0;
+            position: absolute;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: rgba(0,0,0,.5) 0px 5px 50px;
+            background-color: rgb(35, 41, 46); color: rgb(255, 255, 255);
+            font-family: inherit; 
+            position: fixed; 
+            display: block;
+            width: 128px;
+            bottom: 2em;
+            left: 2em; 
+        }
+        #ihavecookies-debugger div.wrapper {
+            vertical-align: middle;
+            font-size: 1.5em;
+        }
+        #ihavecookies-debugger div.wrapper div {
+            display: table-cell;
+            width: 32px;
+            text-align: center;
+        }
+        #ihavecookies-debugger div.on img {
+            filter:hue-rotate(90deg);
+        }
+        #ihavecookies-debugger :not(.on) img {
+            filter:grayscale(100%);
+        }
 
     </style>
 </head>
@@ -155,6 +211,14 @@ session_start();
 		<img src="img/github-logo.svg" alt="Github">
 	</a>
 
+    <div id="ihavecookies-debugger">
+        <div class="wrapper">
+            <div class="control"><img src="img/cookie2.png"></div>
+            <div class="preferences"><img src="img/cookie.png"></div>
+            <div class="analytics"><img src="img/cookie.png"></div>
+            <div class="marketing"><img src="img/cookie.png"></div>
+        </div>
+    </div>
 
     <div class="container">
         <h1>ihavecookies+ jQuery Plugin in action</h1>

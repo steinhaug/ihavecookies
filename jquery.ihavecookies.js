@@ -188,7 +188,8 @@
                 $.each($('input[name="gdpr[]"]').serializeArray(), function(i, field){
                     prefs.push(field.value);
                 });
-                setCookie('cookieControlPrefs', JSON.stringify(prefs), 365);
+                // https://www.webdeveloper.com/forum/d/77256-strip-double-quotes-of-beginning-and-end-of-string
+                setCookie('cookieControlPrefs', JSON.stringify(prefs).replace(/(^")|("$)|(\\)/g, ''), 365);
 
                 // Run callback function
                 settings.onAccept.call(this);
