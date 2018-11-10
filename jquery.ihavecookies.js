@@ -349,7 +349,7 @@
                 c = c.substring(1);
             }
             if (c.indexOf(cookie_name) === 0) {
-                return c.substring(cookie_name.length, c.length);
+                return c.substring(cookie_name.length, c.length).replace(/(^")|("$)|(\\)/g, '');
             }
         }
         return false;
