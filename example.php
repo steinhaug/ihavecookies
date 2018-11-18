@@ -85,7 +85,6 @@ session_start();
 
         var cprefs = $.cookie('cookieControlPrefs');
         cprefs = JSON.parse(cprefs);
-console.log(cprefs);
         $.each(['preferences','analytics','marketing'], function( index, value ){
             if( !(cprefs.indexOf(value) === -1) ){
                 $('#ihavecookies-debugger .' + value).addClass('on').find('img').attr('title',value + ' cookie is set');
